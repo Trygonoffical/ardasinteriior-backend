@@ -1,12 +1,14 @@
+// db/models/user.js
 'use strict';
-const {
-  Model,
-  Sequelize,
-  DataTypes
-} = require('sequelize');
-const bcrypt = require('bcrypt')
+const { Model, DataTypes } = require('sequelize');
+const bcrypt = require('bcrypt');
 const sequelize = require('../../config/db');
-module.exports = sequelize.define('Users', {
+
+class User extends Model {
+  // You can define any custom methods for the model here
+}
+
+User.init({
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -32,21 +34,8 @@ module.exports = sequelize.define('Users', {
     allowNull: true,
     type: DataTypes.STRING
   },
-  // confirmPassword:{
-  //   type: DataTypes.VIRTUAL,
-  //   set(value){
-  //     if(value === this.password){
-  //       const hashPassword = bcrypt.hashSync('value' , 10)
-  //       this.setDataValue('password' , hashPassword);
-  //     }else{
-  //       throw new Error(
-  //         'Password and Confirm Password must be same'
-  //       )
-  //     }
-  //   }
-  // },
   userType: {
-    type: DataTypes.ENUM('0', '1' ,'2')
+    type: DataTypes.ENUM('0', '1', '2')
   },
   createdAt: {
     allowNull: false,
@@ -59,8 +48,12 @@ module.exports = sequelize.define('Users', {
   deletedAt: {
     type: DataTypes.DATE
   }
-},{
-  paranoid:true,
+}, {
+  sequelize,
+  modelName: 'User',
+  tableName: 'Users',
+  paranoid: true,
   freezeTableName: true,
-  modelName: 'Users',
-})
+});
+
+module.exports = User;

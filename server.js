@@ -1,11 +1,18 @@
-require('dotenv').config({path: `${process.cwd()}/.env`});
+// require('dotenv').config({path: `${process.cwd()}/.env`});
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors')
 const sequelize = require('./config/db');
 const allRoutes = require('./routes/index')
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors())
+app.use(express.urlencoded({ extended: true }));
+app.use('/public', express.static('public'));
+
+
 const PORT = process.env.PORT ||  3002;
 
 // all routes here 

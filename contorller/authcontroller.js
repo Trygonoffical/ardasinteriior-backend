@@ -1,5 +1,5 @@
 const { where } = require("sequelize");
-const user = require("../db/models/user");
+const User = require("../db/models/user");
 const otp = require('../db/models/otp')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
@@ -17,7 +17,7 @@ const genaratetoken = (payload) =>{
 const registation = async(req, res, next)=>{
     const body = req.body;
     const hashPassword = bcrypt.hashSync(body.password , 10)
-    const newAdminUser = await user.create({ 
+    const newAdminUser = await User.create({ 
         firstName: body.firstName,
         lastName: body.lastName,
         email: body.email,
@@ -58,7 +58,7 @@ const login = async(req , res , next) =>{
         message : "please Provice email and Password"
     })
    }
-   const result = await user.findOne({where : {email}})
+   const result = await User.findOne({where : {email}})
    if(!result || !(await bcrypt.compare(password , result.password))){
     return res.status(401).json({
         status : 'fail',
@@ -79,7 +79,7 @@ const login = async(req , res , next) =>{
 
 //View All the Users
 const viewAll = async(req , res , next)=>{
-    const result = await user.findAll();
+    const result = await User.findAll();
     return res.status(200).json({
         status: "success",
         message : result
@@ -94,6 +94,13 @@ const sendingOTP = async(phone)=>{
             const updateotp = await otp.update({otpVal : otpval},{ where :{
                 phoneNo:  phone,
             }})
+            // try {
+            //     const otpsms =  `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+            //     const resSMS = fetch('otpsms');
+            // } catch (error) {
+            //     console.log('Failed to create OTP User', error)
+            // }
+            
             if(!updateotp){
                 throw new Error('Failed to create OTP User');
             }
@@ -107,6 +114,22 @@ const sendingOTP = async(phone)=>{
                     throw new Error('Failed to create OTP User');
                 }
         }
+
+        try {
+            // const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+            // const resSMS = await fetch(otpsms);
+            // const resSMSJson = await resSMS.json();
+            const resSMSJson = {
+                status : 'success'
+            }
+
+            if (resSMSJson.status !== 'success') {
+                throw new Error('Failed to send OTP SMS');
+            }
+        } catch (error) {
+            console.log('Failed to send OTP SMS', error);
+            throw new Error('Failed to send OTP SMS');
+        }
         return { status: 'success', message: 'OTP Saved' };
     } catch (error) {
         console.log(error)
@@ -117,11 +140,11 @@ const sendingOTP = async(phone)=>{
 const customerLogin = async(req, res , next)=>{
     const {phone} =  req.body ; 
     try {
-        const findUser = await user.findOne({where : {phone}})
+        const findUser = await User.findOne({where : {phone}})
         if(findUser){
             await sendingOTP(findUser.phone);
         }else{
-            const newCustomer = await user.create({ 
+            const newCustomer = await User.create({ 
                 phone: phone,
                 userType: '1'
                })
@@ -183,7 +206,7 @@ const validatePhone = async(req , res, next) =>{
         // check the otp and phone no in otps table
         const checkOtp = await otp.findOne({where : {phoneNo , otpVal}})
         if(checkOtp){
-            const userinfo = await user.findOne({where : { phone : phoneNo }})
+            const userinfo = await User.findOne({where : { phone : phoneNo }})
             if(!userinfo){
                 return res.status(404).json({
                     status : "fail",
@@ -193,6 +216,7 @@ const validatePhone = async(req , res, next) =>{
             const newResult = userinfo.toJSON();
             delete newResult.password;
             delete newResult.deletedAt;
+            delete newResult.userType;
             // delete newResult.userType;
             newResult.token = genaratetoken({
                 id:newResult.id
