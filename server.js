@@ -1,5 +1,6 @@
 // require('dotenv').config({path: `${process.cwd()}/.env`});
 require('dotenv').config();
+const path = require('path')
 const express = require('express');
 const cors = require('cors')
 const sequelize = require('./config/db');
@@ -8,10 +9,22 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors())
+app.use(cors(
+  {
+    origin: 'http://localhost:3000', // replace with your frontend's URL
+    credentials: true
+}
+//   {
+//   origin: 'http://localhost:3000/', // Your frontend URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true // Enable to handle cookies
+// }
+))
 app.use(express.urlencoded({ extended: true }));
-app.use('/public', express.static('public'));
+// app.use('/public', express.static('public'));
 
+// Serve static files from the 'public' directory
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT ||  3002;
 

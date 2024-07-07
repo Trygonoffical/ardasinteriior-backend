@@ -94,12 +94,12 @@ const sendingOTP = async(phone)=>{
             const updateotp = await otp.update({otpVal : otpval},{ where :{
                 phoneNo:  phone,
             }})
-            // try {
-            //     const otpsms =  `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
-            //     const resSMS = fetch('otpsms');
-            // } catch (error) {
-            //     console.log('Failed to create OTP User', error)
-            // }
+            try {
+                const otpsms =  `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+                const resSMS = fetch('otpsms');
+            } catch (error) {
+                console.log('Failed to create OTP User', error)
+            }
             
             if(!updateotp){
                 throw new Error('Failed to create OTP User');
@@ -116,12 +116,12 @@ const sendingOTP = async(phone)=>{
         }
 
         try {
-            // const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
-            // const resSMS = await fetch(otpsms);
-            // const resSMSJson = await resSMS.json();
-            const resSMSJson = {
-                status : 'success'
-            }
+            const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+            const resSMS = await fetch(otpsms);
+            const resSMSJson = await resSMS.json();
+            // const resSMSJson = {
+            //     status : 'success'
+            // }
 
             if (resSMSJson.status !== 'success') {
                 throw new Error('Failed to send OTP SMS');
