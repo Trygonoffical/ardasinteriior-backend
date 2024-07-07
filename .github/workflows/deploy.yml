@@ -27,13 +27,9 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          echo "$SSH_PRIVATE_KEY" > deploy_key
-          chmod 600 deploy_key
-          scp -o StrictHostKeyChecking=no -i deploy_key -r . $SSH_USERNAME@$SSH_HOST:/var/www/ardas/backend
-          ssh -o StrictHostKeyChecking=no -i deploy_key $SSH_USERNAME@$SSH_HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $SSH_USERNAME@$SSH_HOST << 'EOF'
             cd /var/www/ardas/backend
             git pull origin main
             npm install
             pm2 restart all
           EOF
-          rm deploy_key
