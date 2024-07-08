@@ -36,4 +36,4 @@ jobs:
             npm install
             pm2 restart all
           EOF
-          rm deploy_key
+          rm deploy_key 
