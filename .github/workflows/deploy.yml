@@ -13,6 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Debug SSH key
+        run: |
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key_backend
+          chmod 400 ~/.ssh/deploy_key_backend
+          cat ~/.ssh/deploy_key_backend
+          ls -lah ~/.ssh
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -20,6 +27,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key_backend
+          chmod 600 ~/.ssh/deploy_key_backend
+          eval $(ssh-agent)
+          ssh-add ~/.ssh/deploy_key_backend
+
 
       - name: Deploy to server
         env:
@@ -37,3 +53,7 @@ jobs:
             pm2 restart all
           EOF
           rm deploy_key_backend
+
+      - name: Clean up
+        run: |
+          rm ~/.ssh/deploy_key_backend
