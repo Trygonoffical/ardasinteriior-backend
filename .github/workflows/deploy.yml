@@ -1,4 +1,4 @@
-name: Deploy Backend
+name: Deploy Express.js App
 
 on:
   push:
@@ -29,10 +29,10 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > deploy_key
           chmod 600 deploy_key
-          ssh -o StrictHostKeyChecking=no -i deploy_key $SSH_USERNAME@$SSH_HOST "echo 'SSH connection successful'"
           scp -o StrictHostKeyChecking=no -i deploy_key -r . $SSH_USERNAME@$SSH_HOST:/var/www/ardas/backend
           ssh -o StrictHostKeyChecking=no -i deploy_key $SSH_USERNAME@$SSH_HOST << 'EOF'
             cd /var/www/ardas/backend
+            git pull origin main
             npm install
             pm2 restart all
           EOF
