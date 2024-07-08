@@ -23,13 +23,16 @@ jobs:
 
       - name: Deploy to server
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY_BACKEND }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $SSH_USERNAME@$SSH_HOST << 'EOF'
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > deploy_key
+          chmod 600 deploy_key
+          scp -o StrictHostKeyChecking=no -i deploy_key -r . $SSH_USERNAME@$SSH_HOST:/var/www/ardas/backend
+          ssh -o StrictHostKeyChecking=no -i deploy_key $SSH_USERNAME@$SSH_HOST << 'EOF'
             cd /var/www/ardas/backend
-            git pull origin main
             npm install
             pm2 restart all
           EOF
+          rm deploy_key
