@@ -21,6 +21,11 @@ jobs:
           cat ~/.ssh/deploy_key_backend
           ls -lah ~/.ssh
 
+      - name: Load SSH key
+        run: |
+          eval $(ssh-agent)
+          ssh-add ~/.ssh/deploy_key_backend
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
