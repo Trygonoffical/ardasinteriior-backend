@@ -85,5 +85,26 @@ const deleteSlider = async (req, res , next) => {
     }
   };
 
+  // edit Slider 
+const editSlider = async(req, res , next) => {
+  const { id } = req.params; 
+  // const deskfiles = req.files.deskfiles ;
+  // const mobfiles = req.files.mobfiles ;
+  // const links = req.body.links;
+  try {
+    const slider = await homeslider.findByPk(id);
+    if (!slider) {
+      return res.status(404).json({ message: 'Slider not found' });
+    }
+    return res.status(200).json({
+      status: 'success',
+      data : slider,
+      message: 'Slider and associated files deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting slider:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
 
-module.exports = {getAllSlider , createSlider , deleteSlider}
+module.exports = {getAllSlider , createSlider , deleteSlider , editSlider}

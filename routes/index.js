@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('./auth')
 const slider = require('./slider');
 const genaral = require('./genaral')
+const customers = require('./customer')
 const authenticateToken = require('../middleware/authenticateToken');
 
 //genaral APIs
@@ -17,7 +18,7 @@ router.use('/auth' , auth)
 router.use('/sliders' , authenticateToken , slider)
 // router.use('/sliders'  , slider)
 
-
+router.use('/customers' , authenticateToken , customers)
 
 
 

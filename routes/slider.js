@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const {getAllSlider , createSlider, deleteSlider} = require('../contorller/slidercontroller');
+const {getAllSlider , createSlider, deleteSlider , editSlider} = require('../contorller/slidercontroller');
 const multer = require('multer')
 // const upload = multer({ dest: 'uploads/' })
 
@@ -23,6 +23,9 @@ router.get('/' , getAllSlider);
 
 // create slider 
 router.post('/create' ,upload.array('files'),createSlider)
+
+//edit slider
+router.put('/slider/:id' , editSlider)
 
 //delete slider
 router.delete('/delete/:id' , deleteSlider)
