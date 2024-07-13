@@ -99,7 +99,7 @@ const editSlider = async(req, res , next) => {
     return res.status(200).json({
       status: 'success',
       data : slider,
-      message: 'Slider and associated files deleted successfully',
+      message: 'Slider featching successfully',
     });
   } catch (error) {
     console.error('Error deleting slider:', error);
