@@ -14,7 +14,7 @@ const remote = async(req , res , next)=>{
                 message: 'Remote Config successfully',    
             })
         } catch (error) {
-            console.error('Error creating sliders:', err);
+            console.error('Error creating sliders:', error);
             return res.status(500).json({
               status: 'error',
               message: 'Internal Server Error',
