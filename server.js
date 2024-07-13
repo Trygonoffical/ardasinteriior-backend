@@ -9,17 +9,39 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors(
-  {
-    origin: 'http://localhost:3000', // replace with your frontend's URL
-    credentials: true
-}
+// app.use(cors(
 //   {
-//   origin: 'http://localhost:3000/', // Your frontend URL
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true // Enable to handle cookies
+//     origin: 'http://localhost:3000', // replace with your frontend's URL
+//     credentials: true
 // }
-))
+// //   {
+// //   origin: 'http://localhost:3000/', // Your frontend URL
+// //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+// //   credentials: true // Enable to handle cookies
+// // }
+// ))
+
+// Array of allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://195.35.20.31',
+  // 'https://another-example.com'
+];
+
+// Custom CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Check if the incoming origin is in the allowed origins array
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // Enable to handle cookies
+};
+
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 // app.use('/public', express.static('public'));
 
