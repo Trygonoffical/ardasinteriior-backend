@@ -1,55 +1,55 @@
-name: Deploy Express.js App
+# name: Deploy Express.js App
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   # build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key_backend
-          chmod 400 ~/.ssh/deploy_key_backend
-          eval $(ssh-agent)
-          ssh-add ~/.ssh/deploy_key_backend
+#       - name: Set up SSH key
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key_backend
+#           chmod 400 ~/.ssh/deploy_key_backend
+#           eval $(ssh-agent)
+#           ssh-add ~/.ssh/deploy_key_backend
 
-      - name: Debug SSH connection
-        run: ssh -o StrictHostKeyChecking=no -A -i ~/.ssh/deploy_key_backend $SSH_USERNAME@$SSH_HOST "echo SSH connection successful"
+#       - name: Debug SSH connection
+#         run: ssh -o StrictHostKeyChecking=no -A -i ~/.ssh/deploy_key_backend $SSH_USERNAME@$SSH_HOST "echo SSH connection successful"
  
-      - name: Load SSH key
-        run: |
-          eval $(ssh-agent)
-          ssh-add ~/.ssh/deploy_key_backend
+#       - name: Load SSH key
+#         run: |
+#           eval $(ssh-agent)
+#           ssh-add ~/.ssh/deploy_key_backend
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2  
-        with:
-          node-version: '20'  # Adjust the Node.js version as per your requirement
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2  
+#         with:
+#           node-version: '20'  # Adjust the Node.js version as per your requirement
 
-      - name: Install dependencies
-        run: npm install
+#       - name: Install dependencies
+#         run: npm install
 
-      - name: Deploy to server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY_BACKEND }} 
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -A -i ~/.ssh/deploy_key_backend $SSH_USERNAME@$SSH_HOST << 'EOF'
-            cd /var/www/ardas/backend
-            git pull origin main
-            npm install
-            pm2 restart all
-          EOF
+#       - name: Deploy to server
+#         env:
+#           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY_BACKEND }} 
+#           SSH_HOST: ${{ secrets.SSH_HOST }}
+#           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+#         run: |
+#           ssh -o StrictHostKeyChecking=no -A -i ~/.ssh/deploy_key_backend $SSH_USERNAME@$SSH_HOST << 'EOF'
+#             cd /var/www/ardas/backend
+#             git pull origin main
+#             npm install
+#             pm2 restart all
+#           EOF
 
-      - name: Clean up
-        run: |
-          rm ~/.ssh/deploy_key_backend
+#       - name: Clean up
+#         run: |
+#           rm ~/.ssh/deploy_key_backend
