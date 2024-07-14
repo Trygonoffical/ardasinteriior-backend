@@ -10,15 +10,15 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors(
-//   {
-//     origin: 'http://localhost:3000', // replace with your frontend's URL
-//     credentials: true   
-// }
   {
-  origin: 'http://localhost:3000/', // Your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // Enable to handle cookies
+    origin: 'http://195.35.20.31', // replace with your frontend's URL
+    credentials: true
 }
+//   {
+//   origin: 'http://localhost:3000/', // Your frontend URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true // Enable to handle cookies
+// }
 ))
 app.use(express.urlencoded({ extended: true }));
 // app.use('/public', express.static('public'));
