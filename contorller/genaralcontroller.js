@@ -6,13 +6,21 @@ const homeslider = require('../db/models/homeslider')
 const remote = async(req , res , next)=>{
         try {
            const Hsliders = await homeslider.findAll();
+            if(Hsliders){
+                return res.status(200).json({
+                    status: "success",
+                    Homesliders : Hsliders,
+                    message: 'Remote Config successfully',    
+                })
+            }else {
+                return res.status(200).json({
+                    status: "success",
+                    Homesliders : [],
+                    message: 'Remote Config successfully but empty',    
+                })
+            }
 
-
-            return res.status(200).json({
-                status: "success",
-                Homesliders : Hsliders,
-                message: 'Remote Config successfully',    
-            })
+            
         } catch (error) {
             console.error('Error creating sliders:', error);
             return res.status(500).json({
