@@ -2,20 +2,17 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('HomeSliders', {
+    await queryInterface.createTable('AdBanners', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      WImg: {
+      Img: {
         type: Sequelize.STRING
       },
-      MImg: {
-        type: Sequelize.STRING
-      },
-      link: {
+      section: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -29,6 +26,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('HomeSliders');
+    await queryInterface.dropTable('AdBanners');
   }
 };

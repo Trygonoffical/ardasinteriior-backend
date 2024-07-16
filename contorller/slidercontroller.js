@@ -7,63 +7,64 @@ const homeslider = require('../db/models/homeslider')
 const getAllSlider = async(req , res , next)=>{
     try {
         const result = await homeslider.findAll();
-        return res.status(200).json({
+        if(result){
+          return res.status(200).json({
             status: "success",
             data: result,
             message: 'Sliders featched successfully',    
         })
+        }
+        return res.status(200).json({
+            status: "success",
+            data: [],
+            message: 'No data in Sliders',    
+        })
     } catch (error) {
-        console.error('Error creating sliders:', err);
+        console.error('Error creating sliders:', error);
         return res.status(500).json({
           status: 'error',
           message: 'Internal Server Error',
         });
     }
-   
-   
 }
 
 // create Slider 
 const createSlider = async(req, res, next)=>{
+  const deskfiles = req.files.deskfiles || [];
+  const mobfiles = req.files.mobfiles || [];
+  const links = req.body.links;
 
-    const files = req.files;
-    const links = req.body.links;
-    // console.log(files);
-    // console.log(links);
-    try {
-        const linksArray = Array.isArray(links) ? links : [links];
+  try {
+    const linksArray = Array.isArray(links) ? links : [links];
 
-        // Use a transaction to ensure all inserts succeed or fail together
-        const createdSliders = await sequelize.transaction(async (t) => {
-        return await Promise.all(files.map(async (file, index) => {
-            const newSlider = {
-            Img: `/uploads/Sliders/${file.filename}`,
-            link: linksArray[index],
-            };
-            // console.log('newSlider' , newSlider);
-            const slider = await homeslider.create(newSlider, { transaction: t });
-            return slider;
-        }));
-        });
+    const createdSliders = await sequelize.transaction(async (t) => {
+      return await Promise.all(linksArray.map(async (link, index) => {
+        const deskfile = deskfiles[index] || null;
+        const mobfile = mobfiles[index] || null;
 
-        return res.status(200).json({
-        status: 'success',
-        data: createdSliders,
-        message: 'Sliders created successfully',
-        });
-      } catch (err) {
-        console.error('Error creating sliders:', err);
-        return res.status(500).json({
-          status: 'error',
-          message: 'Internal Server Error',
-        });
-      }
+        const newSlider = {
+          WImg: deskfile ? `/uploads/Sliders/${deskfile.filename}` : null,
+          MImg: mobfile ? `/uploads/Sliders/${mobfile.filename}` : null,
+          link: link,
+        };
 
-    // const {test} = req.body;
-    // return res.status(200).json({
-    //     status : 'success',
-    //     message : `its working  ${test}`
-    // })
+        const slider = await homeslider.create(newSlider, { transaction: t });
+        return slider;
+      }));
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: createdSliders,
+      message: 'Sliders created successfully',
+    });
+  } catch (err) {
+    console.error('Error creating sliders:', err);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
 }
 
 // Delete Slider
@@ -76,16 +77,39 @@ const deleteSlider = async (req, res , next) => {
       if (!slider) {
         return res.status(404).json({ message: 'Slider not found' });
       }
+      // Paths to the files to be deleted
+    const deskImgPath = path.join(__dirname, '../public', slider.WImg);
+    const mobImgPath = path.join(__dirname, '../public', slider.MImg);
+
+    // Delete the slider entry from the database
+    await slider.destroy();
+
+    // Function to delete a file if it exists
+    const deleteFile = (filePath) => {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    };
+
+    // Delete the associated files
+    deleteFile(deskImgPath);
+    deleteFile(mobImgPath);
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Slider and associated files deleted successfully',
+    });
   
-      await slider.destroy();
-      return res.status(200).json({ status: 'success' , message: 'Slider deleted successfully' });
+      // await slider.destroy();
+      // return res.status(200).json({ status: 'success' , message: 'Slider deleted successfully' });
     } catch (error) {
       console.error('Error deleting slider:', error);
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   };
 
-  // edit Slider 
+
+// edit Slider 
 const editSlider = async(req, res , next) => {
   const { id } = req.params; 
   // const deskfiles = req.files.deskfiles ;
@@ -99,7 +123,7 @@ const editSlider = async(req, res , next) => {
     return res.status(200).json({
       status: 'success',
       data : slider,
-      message: 'Slider featching successfully',
+      message: 'Slider and associated files deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting slider:', error);

@@ -11,7 +11,10 @@ module.exports = sequelize.define('HomeSliders', {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      Img: {
+      WImg: {
+        type: DataTypes.STRING
+      },
+      MImg: {
         type: DataTypes.STRING
       },
       link: {
@@ -27,5 +30,5 @@ module.exports = sequelize.define('HomeSliders', {
       }
     }, {
       freezeTableName: true,
-      modelName: 'HomeSliders',
+      modelName: 'HomeSlider',
     })

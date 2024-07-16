@@ -2,21 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('HomeSliders', {
+    await queryInterface.createTable('Pages', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      WImg: {
+      title: {
         type: Sequelize.STRING
       },
-      MImg: {
-        type: Sequelize.STRING
-      },
-      link: {
-        type: Sequelize.STRING
+      content: {
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
@@ -29,6 +26,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('HomeSliders');
+    await queryInterface.dropTable('Pages');
   }
 };
