@@ -29,7 +29,7 @@ router.get('/' , getAllSlider);
 router.post('/create' ,cpUpload,createSlider)
 
 //edit slider
-router.put('/slider/:id' , editSlider)
+router.put('/:id' , editSlider)
 
 //delete slider
 router.delete('/delete/:id' , deleteSlider)

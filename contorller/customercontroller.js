@@ -1,4 +1,4 @@
-
+const { where } = require('sequelize');
 const sequelize = require('../config/db');
 const User = require("../db/models/user");
 // get all customers

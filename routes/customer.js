@@ -4,5 +4,5 @@ const {getAllCustomers } = require('../contorller/customercontroller')
 // home page sliders Routes
 router.get('/' , getAllCustomers);
 
-
+//get All banners
 module.exports = router;

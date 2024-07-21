@@ -4,7 +4,7 @@ const {
   DataTypes
 } = require('sequelize');
 const sequelize = require('../../config/db');
-module.exports = sequelize.define('Otps', {
+module.exports = sequelize.define('otps', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -27,5 +27,6 @@ module.exports = sequelize.define('Otps', {
       }
     },{
       freezeTableName: true,
-      modelName: 'Otps'
+      modelName: 'Otp',
+      tableName: 'otps',
     });

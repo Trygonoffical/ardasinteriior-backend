@@ -94,16 +94,28 @@ const sendingOTP = async(phone)=>{
             const updateotp = await otp.update({otpVal : otpval},{ where :{
                 phoneNo:  phone,
             }})
+            if(!updateotp){
+                throw new Error('Failed to create OTP User');
+            }
             try {
-                const otpsms =  `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+                // const otpsms =  `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+
+
+               const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=ARDAS&apikey=A028F-755BF&apirequest=Text&sender=ARDASS&mobile=${phone}&message=Dear User ${otpval} is the OTP for your login at Ardas Interior. In case you have not requested this, please contact us at ardasinterior@gmail.com or 18002571022.&route=TRANS&TemplateID=1707172112704680310&format=JSON`;
                 const resSMS = fetch('otpsms');
+                const resSMSJson = await resSMS.json();
+                if (resSMSJson.status !== 'success') {
+                    throw new Error('Failed to send OTP SMS');
+                }else{
+                        return res.status(200).json({
+                            status : 'success'
+                        }) 
+                    }
             } catch (error) {
                 console.log('Failed to create OTP User', error)
             }
             
-            if(!updateotp){
-                throw new Error('Failed to create OTP User');
-            }
+            
         }else{
             const newotpuser = await otp.create({ 
                 phoneNo:  phone,
@@ -113,24 +125,34 @@ const sendingOTP = async(phone)=>{
                 if(!newotpuser){
                     throw new Error('Failed to create OTP User');
                 }
-        }
+        
 
-        try {
-            const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
-            const resSMS = await fetch(otpsms);
-            const resSMSJson = await resSMS.json();
-            // const resSMSJson = {
-            //     status : 'success'
-            // }
+            try {
+                // const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
+                const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=ARDAS&apikey=A028F-755BF&apirequest=Text&sender=ARDASS&mobile=${phone}&message=Dear User ${otpval} is the OTP for your login at Ardas Interior. In case you have not requested this, please contact us at ardasinterior@gmail.com or 18002571022.&route=TRANS&TemplateID=1707172112704680310&format=JSON`;
+                const resSMS = await fetch(otpsms);
+                const resSMSJson = await resSMS.json();
+                // if(resSMS.status == "success"){
+                //     return res.status(200).json({
+                //         status: 'success'
+                //     })
+                // }else{
+                //     throw new Error('Failed to send OTP SMS');
+                // }
 
-            if (resSMSJson.status !== 'success') {
+                if (resSMSJson.status !== 'success') {
+                    throw new Error('Failed to send OTP SMS');
+                }else{
+                        return res.status(200).json({
+                            status : 'success'
+                        }) 
+                    }
+            } catch (error) {
+                console.log('Failed to send OTP SMS', error);
                 throw new Error('Failed to send OTP SMS');
             }
-        } catch (error) {
-            console.log('Failed to send OTP SMS', error);
-            throw new Error('Failed to send OTP SMS');
+        // return { status: 'success', message: 'OTP Saved' };
         }
-        return { status: 'success', message: 'OTP Saved' };
     } catch (error) {
         console.log(error)
     }

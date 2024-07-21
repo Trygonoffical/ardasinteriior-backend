@@ -33,7 +33,7 @@ const createSlider = async(req, res, next)=>{
   const deskfiles = req.files.deskfiles || [];
   const mobfiles = req.files.mobfiles || [];
   const links = req.body.links;
-
+  console.log('res data = ' ,req )
   try {
     const linksArray = Array.isArray(links) ? links : [links];
 
