@@ -1,9 +1,17 @@
 
-const {Product} = require('../db/models')
+const {Product , Category} = require('../db/models')
 
 const GetAllProducts = async(req, res, next)=>{
     try {
-        const products = await Product.findAll();
+        const products = await Product.findAll(
+          {
+            include: [{
+              model: Category,
+              as: 'subcategory',
+              attributes: ['name'] // Fetch only the category name
+            }]
+          }
+        );
         const data = products ? products : [];
         // if(data.length > 0) return res.status(200).json({
         //     status : 'success',
@@ -13,7 +21,7 @@ const GetAllProducts = async(req, res, next)=>{
         
         return res.status(200).json({
             status : 'success',
-            data : products,
+            data : data,
             message: "Data Fetch successfully"
         })
     } catch (error) {
@@ -26,45 +34,49 @@ const GetAllProducts = async(req, res, next)=>{
 
 // create Product 
 const createProduct = async(req, res, next)=>{
-    const mainImage = req.files.mainImage || [];
-    const productGallery = req.files.productGallery || [];
-    // const links = req.body.links;
-    console.log('res data = ' ,req )
-      return res.status(200).json({
-        status: 'success',
-        message: 'Product created successfully',
-      });
-    // try {
-    //   const linksArray = Array.isArray(links) ? links : [links];
+  const mainImage = req.files.mainImage || [];
+  const productGallery = req.files.productGallery || [];
+  const addImage = req.files.addImage || [];
   
-    //   const createdSliders = await sequelize.transaction(async (t) => {
-    //     return await Promise.all(linksArray.map(async (link, index) => {
-    //       const deskfile = deskfiles[index] || null;
-    //       const mobfile = mobfiles[index] || null;
-  
-    //       const newSlider = {
-    //         WImg: deskfile ? `/uploads/Sliders/${deskfile.filename}` : null,
-    //         MImg: mobfile ? `/uploads/Sliders/${mobfile.filename}` : null,
-    //         link: link,
-    //       };
-  
-    //       const slider = await Product.create(newSlider, { transaction: t });
-    //       return slider;
-    //     }));
-    //   });
-  
-    //   return res.status(200).json({
-    //     status: 'success',
-    //     data: createdSliders,
-    //     message: 'Sliders created successfully',
-    //   });
-    // } catch (err) {
-    //   console.error('Error creating sliders:', err);
-    //   return res.status(500).json({
-    //     status: 'error',
-    //     message: 'Internal Server Error',
-    //   });
-    // }
+  try {
+    // Assuming you're receiving other product details in req.body
+    const { name, MRP, offerPrice, shortDescription, todaysDeal, yourSaving, tags, subcategoryId } = req.body;
+
+    // Construct paths for images
+    const mainImagePath = mainImage.length > 0 ? `/uploads/Products/${mainImage[0].filename}` : null;
+    const productGalleryPaths = productGallery.map(file => `/uploads/Products/${file.filename}`);
+    const addImagePath = addImage.length > 0 ? `/uploads/Products/${addImage[0].filename}` : null;
+
+    // Create a new product
+    const newProduct = {
+      name,
+      MRP,
+      offerPrice,
+      shortDescription,
+      todaysDeal,
+      yourSaving,
+      tags: Array.isArray(tags) ? tags : [tags], // Ensure tags are an array
+      subcategoryId,
+      mainImage: mainImagePath,
+      productGallery: productGalleryPaths,
+      addImage: addImagePath
+    };
+
+    // Save the product to the database
+    const createdProduct = await Product.create(newProduct);
+
+    return res.status(200).json({
+      status: 'success',
+      data: createdProduct,
+      message: 'Product created successfully',
+    });
+  } catch (err) {
+    console.error('Error creating product:', err);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
   }
 
 module.exports = {GetAllProducts , createProduct}

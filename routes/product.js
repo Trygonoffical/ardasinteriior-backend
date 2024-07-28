@@ -18,9 +18,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 const cpUpload = upload.fields([
-  { name: 'mainImage', maxCount: 10 },
-  { name: 'productGallery', maxCount: 10 },
-  { name: 'addImage', maxCount: 10 },
+  { name: 'mainImage', maxCount: 1 },
+  { name: 'productGallery', maxCount: 20 },
+  { name: 'addImage', maxCount: 1 },
 ]);
 
 // get all products 
