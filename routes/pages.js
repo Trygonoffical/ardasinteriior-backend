@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {getAllPage , createPage , deletepage} = require('../contorller/pagecontroller');
+const {getAllPage , createPage , deletepage} = require('../controllers/pageController');
 
 // all page
 router.get('/' , getAllPage);

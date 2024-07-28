@@ -1,6 +1,6 @@
 const { where } = require("sequelize");
-const User = require("../db/models/user");
-const otp = require('../db/models/otp')
+const {User} = require("../db/models");
+const {Otp} = require('../db/models')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const otpGenerator = require('otp-generator')
@@ -26,8 +26,6 @@ const registation = async(req, res, next)=>{
         userType: '0'
        })
 
-       
-
        const result = newAdminUser.toJSON();
        delete result.password;
        delete result.deletedAt;
@@ -50,8 +48,10 @@ const registation = async(req, res, next)=>{
 };
     // Admin Login 
 const login = async(req , res , next) =>{
-    const {email , password} = req.body;
+   const {email , password} = req.body;
 
+   console.log('email - ', email);
+   console.log('password - ', password);
    if(!email || !password ){
     return res.status(400).json({
         status: 'fail',
@@ -59,6 +59,7 @@ const login = async(req , res , next) =>{
     })
    }
    const result = await User.findOne({where : {email}})
+   console.log('login result - ', result)
    if(!result || !(await bcrypt.compare(password , result.password))){
     return res.status(401).json({
         status : 'fail',
@@ -89,9 +90,9 @@ const viewAll = async(req , res , next)=>{
 const sendingOTP = async(phone)=>{
     const otpval =   otpGenerator.generate(6, { lowerCaseAlphabets:false ,upperCaseAlphabets: false, specialChars: false });
     try {
-        const checkNumber = await otp.findOne({where: { phoneNo:  phone,}})
+        const checkNumber = await Otp.findOne({where: { phoneNo:  phone,}})
         if(checkNumber){
-            const updateotp = await otp.update({otpVal : otpval},{ where :{
+            const updateotp = await Otp.update({otpVal : otpval},{ where :{
                 phoneNo:  phone,
             }})
             if(!updateotp){
@@ -117,7 +118,7 @@ const sendingOTP = async(phone)=>{
             
             
         }else{
-            const newotpuser = await otp.create({ 
+            const newotpuser = await Otp.create({ 
                 phoneNo:  phone,
                 otpVal : otpval
                 })
@@ -206,7 +207,7 @@ const customerLogin = async(req, res , next)=>{
 cron.schedule('* * * * *', async () => {
     try {
         // Destroy OTP records older than 2 minutes
-        await otp.destroy({
+        await Otp.destroy({
             where: {
                 createdAt: {
                     [Op.lt]: new Date(Date.now() - 2 * 60 * 1000) // 2 minutes ago
@@ -226,7 +227,7 @@ const validatePhone = async(req , res, next) =>{
     const {otpVal , phoneNo} = req.body;
     try {
         // check the otp and phone no in otps table
-        const checkOtp = await otp.findOne({where : {phoneNo , otpVal}})
+        const checkOtp = await Otp.findOne({where : {phoneNo , otpVal}})
         if(checkOtp){
             const userinfo = await User.findOne({where : { phone : phoneNo }})
             if(!userinfo){

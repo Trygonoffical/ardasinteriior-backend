@@ -1,36 +1,26 @@
 'use strict';
 const {
-  Model,
-  DataTypes
+  Model
 } = require('sequelize');
-const sequelize = require('../../config/db');
-module.exports = sequelize.define('homeSliders', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: DataTypes.INTEGER
-      },
-      WImg: {
-        type: DataTypes.STRING
-      },
-      MImg: {
-        type: DataTypes.STRING
-      },
-      link: {
-        type: DataTypes.STRING
-      },
-      createdAt: {
-        allowNull: false,
-        type: DataTypes.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: DataTypes.DATE
-      }
-    }, {
-      freezeTableName: true,
-      modelName: 'HomeSlider',
-      tableName: 'homeSliders',
-      
-    })
+module.exports = (sequelize, DataTypes) => {
+  class HomeSlider extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+    }
+  }
+  HomeSlider.init({
+    WImg: { type: DataTypes.STRING},
+    MImg: {type: DataTypes.STRING},
+    link: {type: DataTypes.STRING}
+  }, {
+    sequelize,
+    modelName: 'HomeSlider',
+    tableName: 'homeSliders',
+  });
+  return HomeSlider;
+};

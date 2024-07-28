@@ -1,7 +1,7 @@
 // middleware/authenticateToken.js
 const jwt = require('jsonwebtoken');
 const { where } = require("sequelize");
-const User = require("../db/models/user");
+const {User} = require("../db/models");
 require('dotenv').config();
 // Secret key for JWT
 const SECRET_KEY = process.env.JWT_SECRATE_KEY;

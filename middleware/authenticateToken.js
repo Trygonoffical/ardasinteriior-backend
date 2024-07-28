@@ -1,7 +1,7 @@
 // middleware/authenticateToken.js
 const jwt = require('jsonwebtoken');
 const { where } = require("sequelize");
-const User = require("../db/models/user");
+const {User} = require("../db/models");
 require('dotenv').config();
 // Secret key for JWT
 const SECRET_KEY = process.env.JWT_SECRATE_KEY;
@@ -23,8 +23,7 @@ const authenticateToken = async (req, res, next) => {
         // const user = result.rows[0];
 
         if (!userRecord) return res.status(404).json({ message: "User not found" });
-        if(userRecord.userType != '0') return res.status(401).json({ message: "not authorized" });
-        
+        if(userRecord.userType !== '0') return res.status(401).json({ message: "not authorized" });
         req.user = userRecord;
         next();
     } catch (err) {

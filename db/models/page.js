@@ -1,40 +1,37 @@
 'use strict';
 const {
-  Model,
-  DataTypes
+  Model
 } = require('sequelize');
-const sequelize = require('../../config/db');
-module.exports = sequelize.define('pages', {
-  id: {
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-    type: DataTypes.INTEGER
-  },
-  title: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
-  },
-  slug: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
-  },
-  content: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
-  createdAt: {
-    allowNull: false,
-    type: DataTypes.DATE
-  },
-  updatedAt: {
-    allowNull: false,
-    type: DataTypes.DATE
+module.exports = (sequelize, DataTypes) => {
+  class Page extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+    }
   }
-}, {
-      freezeTableName: true,
-      modelName: 'Page',
-      tableName: 'pages',
-    })
+  Page.init({
+    title: {
+      type:DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    slug: {
+      type:DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    content: {
+      type:DataTypes.TEXT,
+      allowNull: false,
+    }
+  }, {
+    sequelize,
+    modelName: 'Page',
+    tableName: 'pages',
+  });
+  return Page;
+};

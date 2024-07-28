@@ -1,12 +1,13 @@
-
+const path = require('path');
+const fs = require('fs');
 const { where } = require('sequelize');
 const sequelize = require('../config/db');
-const homeslider = require('../db/models/homeslider')
+const {HomeSlider} = require('../db/models')
 
 //View All the Sliders
 const getAllSlider = async(req , res , next)=>{
     try {
-        const result = await homeslider.findAll();
+        const result = await HomeSlider.findAll();
         if(result){
           return res.status(200).json({
             status: "success",
@@ -48,7 +49,7 @@ const createSlider = async(req, res, next)=>{
           link: link,
         };
 
-        const slider = await homeslider.create(newSlider, { transaction: t });
+        const slider = await HomeSlider.create(newSlider, { transaction: t });
         return slider;
       }));
     });
@@ -72,7 +73,7 @@ const deleteSlider = async (req, res , next) => {
     const { id } = req.params; 
     // return res.status(200).json({ message: 'Slider deleted successfully' , id : id });
     try {
-      const slider = await homeslider.findByPk(id);
+      const slider = await HomeSlider.findByPk(id);
   
       if (!slider) {
         return res.status(404).json({ message: 'Slider not found' });
@@ -112,18 +113,44 @@ const deleteSlider = async (req, res , next) => {
 // edit Slider 
 const editSlider = async(req, res , next) => {
   const { id } = req.params; 
-  // const deskfiles = req.files.deskfiles ;
-  // const mobfiles = req.files.mobfiles ;
-  // const links = req.body.links;
+  const deskfiles = req.files.deskfiles ;
+  const mobfiles = req.files.mobfiles ;
+  const link = req.body.link;
   try {
-    const slider = await homeslider.findByPk(id);
+    const slider = await HomeSlider.findByPk(id);
     if (!slider) {
       return res.status(404).json({ message: 'Slider not found' });
     }
+
+    // Paths to the old files
+    const oldDeskImgPath = path.join(__dirname, '../public', slider.WImg);
+    const oldMobImgPath = path.join(__dirname, '../public', slider.MImg);
+    
+    // If new desktop file is provided, delete the old one
+    if (deskfiles && deskfiles.length > 0) {
+      if (fs.existsSync(oldDeskImgPath)) {
+        fs.unlinkSync(oldDeskImgPath);
+      }
+      slider.WImg = `/uploads/Sliders/${deskfiles[0].filename}`; // Save the new file path to the slider record
+    }
+
+    // If new mobile file is provided, delete the old one
+    if (mobfiles && mobfiles.length > 0) {
+      if (fs.existsSync(oldMobImgPath)) {
+        fs.unlinkSync(oldMobImgPath);
+      }
+      slider.MImg = `/uploads/Sliders/${mobfiles[0].filename}`; // Save the new file path to the slider record
+    }
+
+    if (link) {
+      slider.link = link; // Update the link
+    }
+
+    await slider.save(); 
     return res.status(200).json({
       status: 'success',
       data : slider,
-      message: 'Slider and associated files deleted successfully',
+      message: 'Slider Updated successfully',
     });
   } catch (error) {
     console.error('Error deleting slider:', error);

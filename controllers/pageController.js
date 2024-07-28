@@ -1,7 +1,7 @@
 
 const { where } = require('sequelize');
-const sequelize = require('../config/db');
-const Page = require('../db/models/page')
+
+const {Page} = require('../db/models')
 
 //View All the Sliders
 const getAllPage = async(req , res , next)=>{

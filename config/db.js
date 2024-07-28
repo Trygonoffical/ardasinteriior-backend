@@ -1,4 +1,5 @@
-require('dotenv').config({path: `${process.cwd()}/.env`});
+// require('dotenv').config({path: `${process.cwd()}/.env`});
+require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
 const env = process.env.NODE_ENV || 'development';

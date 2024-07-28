@@ -12,15 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-
     return queryInterface.bulkInsert('users', [
-      // {
-      //   firstName: 'John',
-      //   lastName: 'Doe',
-      //   email: 'example@example.com',
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // },
       {
         firstName: "vikas",
         lastName: "gupta",
@@ -41,7 +33,6 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date(),
   }
-
     ]);
   },
 
@@ -52,7 +43,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-
     return queryInterface.bulkDelete('users', null, {});
   }
 };

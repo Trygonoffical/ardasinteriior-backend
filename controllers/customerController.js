@@ -1,6 +1,6 @@
 const { where } = require('sequelize');
-const sequelize = require('../config/db');
-const User = require("../db/models/user");
+
+const {User} = require("../db/models");
 // get all customers
 
 const getAllCustomers = async(req , res, next)=>{

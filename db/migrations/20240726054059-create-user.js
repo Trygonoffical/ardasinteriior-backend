@@ -21,7 +21,6 @@ module.exports = {
         allowNull: true,
         type: Sequelize.STRING,
         unique: true
-        
       },
       phone: {
         type: Sequelize.STRING,
@@ -33,7 +32,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       userType: {
-        type: Sequelize.ENUM('0', '1' ,'2')
+        type: Sequelize.ENUM('0', '1', '2')
       },
       createdAt: {
         allowNull: false,
