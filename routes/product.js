@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const path = require('path');
-const {GetAllProducts , createProduct} = require('../controllers/productController')
+const {GetAllProducts , createProduct , updateProduct , createProInfos} = require('../controllers/productController')
 const multer = require('multer')
 // const upload = multer({ dest: 'uploads/' })
 
@@ -29,7 +29,9 @@ router.get('/', GetAllProducts)
 // Create Product
 router.post('/create', cpUpload, createProduct)
 
+router.post('/createProInfo', createProInfos)
 
+router.put('/update/:id', cpUpload ,updateProduct);
 
 module.exports = router
 

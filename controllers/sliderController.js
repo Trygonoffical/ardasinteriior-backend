@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { where } = require('sequelize');
 const sequelize = require('../config/db');
-const {HomeSlider} = require('../db/models')
+const {HomeSlider , TabProduct} = require('../db/models')
 
 //View All the Sliders
 const getAllSlider = async(req , res , next)=>{
@@ -157,5 +157,41 @@ const editSlider = async(req, res , next) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+const createTags = async(req, res, next)=>{
+  const {title , tagName } = req.body;
+  const newData = {
+    title : title , 
+    TagName : tagName
+  }
+  try {
+    const cerateTags = await TabProduct.create(newData)
+    return res.status(200).json({
+      status: 'success',
+      data : cerateTags,
+      message: 'Tabs created successfully',
+    })
+  } catch (error) {
+    console.error('Error deleting tabs:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
 
-module.exports = {getAllSlider , createSlider , deleteSlider , editSlider}
+}
+
+const GetAllTabs = async(req, res, next)=>{
+ 
+  try {
+    const TabProducts = await TabProduct.findAll()
+    const allData = TabProducts ? TabProducts : [] ;
+    return res.status(200).json({
+      status: 'success',
+      data : allData,
+      message: 'Tabs created successfully',
+    })
+  } catch (error) {
+    console.error('Error deleting tabs:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+
+}
+
+module.exports = {getAllSlider , createSlider , deleteSlider , editSlider , createTags , GetAllTabs}

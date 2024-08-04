@@ -15,7 +15,8 @@ app.use(cors(
     //     credentials: true   
     // }
     {
-        origin: 'http://195.35.20.31', // replace with your frontend's URL
+    //     origin: 'http://195.35.20.31', // replace with your frontend's URL 
+        origin: 'https://ardas.trygon.tech', // replace with your frontend's URL 
         credentials: true   
     }
 ));

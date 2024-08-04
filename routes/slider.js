@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const {getAllSlider , createSlider, deleteSlider , editSlider} = require('../controllers/sliderController');
+const {getAllSlider , createSlider, deleteSlider , editSlider , createTags , GetAllTabs} = require('../controllers/sliderController');
 const multer = require('multer')
 // const upload = multer({ dest: 'uploads/' })
 
@@ -24,9 +24,13 @@ const cpUpload = upload.fields([
 
 // home page sliders Routes
 router.get('/' , getAllSlider);
+router.get('/tabs' , GetAllTabs);
 
 // create slider 
 router.post('/create' ,cpUpload,createSlider)
+
+// create HomeTags 
+router.post('/createTags' ,createTags)
 
 //edit slider
 router.put('/update/:id' ,cpUpload, editSlider)

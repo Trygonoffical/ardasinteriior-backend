@@ -15,6 +15,7 @@ const authenticateToken = require('../middleware/authenticateToken');
 
 router.use('/config', general)
 
+
 //Customer Login Routes
 router.use('/auth' , auth)
 
@@ -26,6 +27,7 @@ router.use('/page' , authenticateToken , page)
 
 //catetory
 router.use('/category' , authenticateToken , category)
+
 
 //adbanners 
 router.use('/banner' , authenticateToken , banner)
