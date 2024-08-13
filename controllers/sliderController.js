@@ -78,9 +78,15 @@ const deleteSlider = async (req, res , next) => {
       if (!slider) {
         return res.status(404).json({ message: 'Slider not found' });
       }
+      let  deskImgPath;
+      let mobImgPath ;
       // Paths to the files to be deleted
-    const deskImgPath = path.join(__dirname, '../public', slider.WImg);
-    const mobImgPath = path.join(__dirname, '../public', slider.MImg);
+      if(slider.WImg){
+        deskImgPath = path.join(__dirname, '../public', slider.WImg);
+      }
+      if(slider.MImg){
+         mobImgPath = path.join(__dirname, '../public', slider.MImg);
+      }
 
     // Delete the slider entry from the database
     await slider.destroy();
@@ -93,8 +99,13 @@ const deleteSlider = async (req, res , next) => {
     };
 
     // Delete the associated files
-    deleteFile(deskImgPath);
-    deleteFile(mobImgPath);
+    if(deskImgPath){
+      deleteFile(deskImgPath);
+    }
+    if(mobImgPath){
+      deleteFile(mobImgPath);
+    }
+    
 
     return res.status(200).json({
       status: 'success',
@@ -157,6 +168,7 @@ const editSlider = async(req, res , next) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+// create Tags 
 const createTags = async(req, res, next)=>{
   const {title , tagName } = req.body;
   const newData = {
@@ -177,6 +189,8 @@ const createTags = async(req, res, next)=>{
 
 }
 
+
+// get all Tabs 
 const GetAllTabs = async(req, res, next)=>{
  
   try {

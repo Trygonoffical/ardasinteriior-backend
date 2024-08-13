@@ -103,20 +103,21 @@ const sendingOTP = async(phone)=>{
 
 
                const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=ARDAS&apikey=A028F-755BF&apirequest=Text&sender=ARDASS&mobile=${phone}&message=Dear User ${otpval} is the OTP for your login at Ardas Interior. In case you have not requested this, please contact us at ardasinterior@gmail.com or 18002571022.&route=TRANS&TemplateID=1707172112704680310&format=JSON`;
+
                 const resSMS = fetch('otpsms');
+                console.log(' resSMS val ', resSMS)
                 const resSMSJson = await resSMS.json();
                 if (resSMSJson.status !== 'success') {
                     throw new Error('Failed to send OTP SMS');
-                }else{
-                        return res.status(200).json({
-                            status : 'success'
-                        }) 
-                    }
+                }
+                // else{
+                //     return res.status(200).json({
+                //         status : 'success'
+                //     }) 
+                // }
             } catch (error) {
                 console.log('Failed to create OTP User', error)
             }
-            
-            
         }else{
             const newotpuser = await Otp.create({ 
                 phoneNo:  phone,
@@ -126,12 +127,11 @@ const sendingOTP = async(phone)=>{
                 if(!newotpuser){
                     throw new Error('Failed to create OTP User');
                 }
-        
-
             try {
                 // const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=TRYGON&apikey=E705A-DFEDC&apirequest=Text&sender=TRYGON&mobile=${phone}&message=Dear Vikas ${otpval} is the OTP for your login at Trygon. In case you have not requested this, please contact us at info@trygon.in&route=TRANS&TemplateID=1707162192151162124&format=JSON`;
                 const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=ARDAS&apikey=A028F-755BF&apirequest=Text&sender=ARDASS&mobile=${phone}&message=Dear User ${otpval} is the OTP for your login at Ardas Interior. In case you have not requested this, please contact us at ardasinterior@gmail.com or 18002571022.&route=TRANS&TemplateID=1707172112704680310&format=JSON`;
                 const resSMS = await fetch(otpsms);
+                console.log(' resSMS val ', resSMS)
                 const resSMSJson = await resSMS.json();
                 // if(resSMS.status == "success"){
                 //     return res.status(200).json({
@@ -143,11 +143,12 @@ const sendingOTP = async(phone)=>{
 
                 if (resSMSJson.status !== 'success') {
                     throw new Error('Failed to send OTP SMS');
-                }else{
-                        return res.status(200).json({
-                            status : 'success'
-                        }) 
-                    }
+                }
+                // else{
+                //     return res.status(200).json({
+                //         status : 'success'
+                //     }) 
+                // }
             } catch (error) {
                 console.log('Failed to send OTP SMS', error);
                 throw new Error('Failed to send OTP SMS');
@@ -157,8 +158,8 @@ const sendingOTP = async(phone)=>{
     } catch (error) {
         console.log(error)
     }
-    
 }
+
 // Customer Login
 const customerLogin = async(req, res , next)=>{
     const {phone} =  req.body ; 
@@ -183,7 +184,6 @@ const customerLogin = async(req, res , next)=>{
             status: 'success',
             message: 'OTP has been sent successfully'
         });
-        
     } catch (error) {
         console.log(error)
         return res.status(500).json({
@@ -191,17 +191,7 @@ const customerLogin = async(req, res , next)=>{
             message: 'Internal server error'
         });
     }
-   
-    // res.status(200).json({
-    //     status : 'Success',
-    //     message: 'route working',
-    //     // phone: phoneNo,
-    //     // otp: otpval
-    // })
 }
-
-
-
 
 // Schedule the cron job to run every minute
 cron.schedule('* * * * *', async () => {
@@ -219,8 +209,6 @@ cron.schedule('* * * * *', async () => {
         console.error('Error deleting expired OTPs:', error);
     }
 });
-
-
 
 // validatining otp 
 const validatePhone = async(req , res, next) =>{
@@ -254,7 +242,6 @@ const validatePhone = async(req , res, next) =>{
                 message : "Not a valid OTP"
             })
         }
-       
     } catch (error) {
         console.error('Error validating OTP:', error);
         return res.status(500).json({
@@ -262,9 +249,6 @@ const validatePhone = async(req , res, next) =>{
             message: 'Internal server error'
         });
     }
-    
-   
-
 }
 
 

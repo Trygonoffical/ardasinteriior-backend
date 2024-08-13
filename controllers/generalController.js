@@ -1,6 +1,6 @@
 
 const { Op } = require('sequelize');
-const {HomeSlider , AdBanner , Category , Product , ProductInfo, TabProduct} = require('../db/models')
+const {HomeSlider , AdBanner , Category , Product , ProductInfo, TabProduct  , ProductVariant , VariantAttribute } = require('../db/models')
 /// get 
 
 const GetAllRemote = async(req , res, next)=>{
@@ -70,12 +70,23 @@ const SingleProduct = async(req, res, next)=>{
         {
         model: Category,
         as: 'subcategory',
-        attributes: ['name'] // Fetch only the category name
+        attributes: ['name' , 'slug'] // Fetch only the category name
       },
       {
         model: ProductInfo,
         foreignKey: 'productId' // Include all product information
+      },
+      {
+        model: ProductVariant,
+        as: 'variants',
+        include: [
+          {
+            model: VariantAttribute,
+            as: 'attributes'
+          }
+        ]
       }
+      
     ]
      });
 
@@ -116,4 +127,59 @@ const GetLatestProductsByCategory = async (req, res, next) => {
   }
 };
 
-module.exports = {GetAllRemote , SingleProduct , GetLatestProductsByCategory}
+
+const getSingleCategory = async(req , res, next)=>{
+  const {name} = req.body ;
+  try {
+    const cat = await Category.findOne({
+      where: { slug :  name },
+      include: [
+        {
+        model: Category,
+        as: 'subcategories',
+        // attributes: ['name'] // Fetch only the category name
+      },
+      {
+        model: Product,
+        as: 'products',
+        // Include any specific attributes you need for the products here
+      }
+    ]
+    })
+    if(!cat) return res.status(404).json({status: 'fail' , message: 'Category Not Found!'})
+    return res.status(200).json({
+      status :  'success',
+      data: cat,
+      message: 'Category fetch successfully',
+    })
+  } catch (error) {
+    console.error('Error fetching Category:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+}
+
+const GetAllProducts = async(req ,res ,next)=>{
+  try {
+    const product = await Product.findAll({
+      include: [
+        {
+        model: Category,
+        as: 'subcategory',
+        attributes: ['name'] // Fetch only the category name
+      },
+      
+    ]
+    });
+    if (!product) {
+      return res.status(404).json({ status: 'fail', message: 'Product not found' });
+    }
+    res.status(200).json({ status: 'success', data: product });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ status: 'fail', message: 'Server error' });
+  }
+}
+module.exports = {GetAllRemote , SingleProduct , GetLatestProductsByCategory , getSingleCategory , GetAllProducts}
