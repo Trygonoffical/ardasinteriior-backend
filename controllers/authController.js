@@ -1,5 +1,5 @@
 const { where } = require("sequelize");
-const {User} = require("../db/models");
+const {User, Location} = require("../db/models");
 const {Otp} = require('../db/models')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
@@ -104,7 +104,7 @@ const sendingOTP = async(phone)=>{
 
                const otpsms = `http://sms.trygon.in/sms-panel/api/http/index.php?username=ARDAS&apikey=A028F-755BF&apirequest=Text&sender=ARDASS&mobile=${phone}&message=Dear User ${otpval} is the OTP for your login at Ardas Interior. In case you have not requested this, please contact us at ardasinterior@gmail.com or 18002571022.&route=TRANS&TemplateID=1707172112704680310&format=JSON`;
 
-                const resSMS = fetch('otpsms');
+                const resSMS = fetch(otpsms);
                 console.log(' resSMS val ', resSMS)
                 const resSMSJson = await resSMS.json();
                 if (resSMSJson.status !== 'success') {
@@ -217,7 +217,17 @@ const validatePhone = async(req , res, next) =>{
         // check the otp and phone no in otps table
         const checkOtp = await Otp.findOne({where : {phoneNo , otpVal}})
         if(checkOtp){
-            const userinfo = await User.findOne({where : { phone : phoneNo }})
+            const userinfo = await User.findOne(
+                {where : { phone : phoneNo },
+                include: [
+                {
+                model: Location,
+                foreignKey: 'userId', // Include all user information
+                as: 'location',
+                // attributes: ['catIds']
+                // Fetch only the category name catIds
+              },
+            ]})
             if(!userinfo){
                 return res.status(404).json({
                     status : "fail",

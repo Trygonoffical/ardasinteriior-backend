@@ -10,39 +10,51 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       LImg: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       topContent: {
+        allowNull: true,
         type: Sequelize.TEXT
       },
       whyImg: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       whytitle: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       whyContent: {
+        allowNull: true,
         type: Sequelize.TEXT
       },
       stattitleone: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       statcontenteone: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       stattitletwo: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       statcontentetwo: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       stattitlethree: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       statcontentethree: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       createdAt: {

@@ -27,6 +27,11 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
+      GST: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: true,
+      },
       password: {
         allowNull: true,
         type: Sequelize.STRING

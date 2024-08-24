@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.Location, {as: 'location', foreignKey: 'userId' });
     }
   }
   User.init({
@@ -37,6 +38,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+    },
+    GST: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: true,
     },
     password: {
       allowNull: true,

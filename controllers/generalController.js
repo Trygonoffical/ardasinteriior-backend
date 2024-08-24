@@ -1,6 +1,6 @@
 
 const { Op } = require('sequelize');
-const {HomeSlider , AdBanner , Category , Product , ProductInfo, TabProduct  , ProductVariant , VariantAttribute } = require('../db/models')
+const {HomeSlider , AdBanner , Category , Product , ProductInfo, TabProduct  , ProductVariant , VariantAttribute , BusinessInfo , TopBar , Popup, HomeCat , MenuCat , About , Submenu} = require('../db/models')
 /// get 
 
 const GetAllRemote = async(req , res, next)=>{
@@ -10,11 +10,43 @@ const GetAllRemote = async(req , res, next)=>{
         // feaching banners data
         const adbanner = await AdBanner.findAll();
         // feaching all categoryies
-        const cats  = await Category.findAll();
+        const cats  = await Category.findAll({
+          include: {
+            model: Category,
+            as: 'subcategories',
+            include: {
+              model: Category,
+              as: 'subcategories'
+            }
+          }
+        });
         // featching all homeTags
         const TabData = await TabProduct.findAll()
         // const alltabsdata = TabProducts ? TabProducts : [];
         let homeTabsData = {};
+        // fetching BusinessInfo data 
+        const compnaydata = await BusinessInfo.findByPk(1)
+        // fetching top head data
+        const topHeadData = await TopBar.findByPk(1)
+        // fetching Popup data
+        const popUpData = await Popup.findByPk(1)
+        // fetching homeTop Categories 
+        const homeCats = await HomeCat.findByPk(1);
+        // fetching Menu Datas
+        const homeMenus = await MenuCat.findAll({
+          include: [
+            {
+            model: Submenu,
+            as: 'submenus',
+            attributes: ['catIds']
+            // Fetch only the category name catIds
+          },
+        ]
+        });
+        // fetching 
+      // about page data 
+      const aboutData = await About.findByPk(1);
+
 
       if (TabData) {
         for (const tab of TabData) {
@@ -32,7 +64,12 @@ const GetAllRemote = async(req , res, next)=>{
         const sliderval = Hsliders ? Hsliders : [];
         const adbannerval = adbanner ? adbanner : [];
         const allCategories = cats ? cats : [];
-        
+        const compData = compnaydata ? compnaydata : [];
+        const topData = topHeadData ? topHeadData : [];
+        const popData = popUpData ? popUpData : [];
+        const homecatsval =  homeCats ? homeCats.cats : []
+        const homeMenu = homeMenus ? homeMenus : [];
+        const about = aboutData ? aboutData : {}
         const featPros = await Product.findAll({
             where: {
                 tags: {
@@ -48,7 +85,13 @@ const GetAllRemote = async(req , res, next)=>{
             adbans : adbannerval,
             categories : allCategories,
             featureProducts : homeFeatureProducts,
-            HomeTabs: homeTabsData
+            HomeTabs: homeTabsData,
+            companyData : compData,
+            topHeadData: topHeadData,
+            popUpData: popUpData,
+            homecatsval : homecatsval,
+            homeMenu : homeMenu,
+            about : about
         })
     } catch (error) {
             console.error('Error creating sliders:', error);
