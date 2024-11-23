@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {getAllPage , createPage , deletepage , updateSocialLinks , updateTopHead , updateCompanyInfo  , updateHomeCategories , getHomeCategories , updateHomeMenu , updateSubMenu} = require('../controllers/pageController');
+const {getAllPage , createPage , deletepage , updateSocialLinks , updateTopHead , updateCompanyInfo  , updateHomeCategories , getHomeCategories , updateHomeMenu , updateSubMenu , UpdateCoupon , GetAllCoupons , DeleteCoupon} = require('../controllers/pageController');
 
 const path = require('path');
 // storage 
@@ -53,5 +53,10 @@ router.delete('/delete/:id' , deletepage)
 router.post('/menucats' , updateHomeMenu);
 router.post('/submenu', updateSubMenu)
 
+
+// update coupon 
+router.post('/UpdateCoupon' , UpdateCoupon)
+router.get('/GetAllCoupon' , GetAllCoupons)
+router.delete('/deleteCoupon/:id' , DeleteCoupon)
 
 module.exports = router;

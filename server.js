@@ -10,15 +10,15 @@ const allRoutes = require('./routes/index')
 // Middleware
 app.use(express.json());
 app.use(cors(
-    // {
-    //     origin: 'http://localhost:3000', // replace with your frontend's URL
-    //     credentials: true   
-    // }
     {
-    //     origin: 'http://195.35.20.31', // replace with your frontend's URL 
-        origin: 'https://ardas.trygon.tech', // replace with your frontend's URL 
+        origin: 'http://localhost:3000', // replace with your frontend's URL
         credentials: true   
     }
+    // {
+    // //     origin: 'http://195.35.20.31', // replace with your frontend's URL 
+    //     origin: 'https://ardas.trygon.tech', // replace with your frontend's URL 
+    //     credentials: true   
+    // }
 ));
 app.use(express.urlencoded({ extended: true }));
 // Serve static files from the 'public' directory

@@ -1,6 +1,6 @@
 
 const { Op } = require('sequelize');
-const {HomeSlider , AdBanner , Category , Product , ProductInfo, TabProduct  , ProductVariant , VariantAttribute , BusinessInfo , TopBar , Popup, HomeCat , MenuCat , About , Submenu} = require('../db/models')
+const {HomeSlider , AdBanner , Category , Product , ProductInfo, TabProduct  , ProductVariant , VariantAttribute , BusinessInfo , TopBar , Popup, HomeCat , MenuCat , About , Submenu , Coupon} = require('../db/models')
 /// get 
 
 const GetAllRemote = async(req , res, next)=>{
@@ -225,4 +225,29 @@ const GetAllProducts = async(req ,res ,next)=>{
     res.status(500).json({ status: 'fail', message: 'Server error' });
   }
 }
-module.exports = {GetAllRemote , SingleProduct , GetLatestProductsByCategory , getSingleCategory , GetAllProducts}
+
+
+const VerifyCoupon = async(req , res , next)=>{
+  const {name} = req.body;
+  if(!name) return res.status(400).json({status: 'fail' , message: "Value can't be empty"})
+    try {
+      const checkcoup  = await Coupon.findOne({where : {name}})
+      if(!checkcoup) return res.status(400).json({status : 'Fail' , message: 'Coupon Not Found'})
+      
+      return res.status(200).json({
+        status : "success",
+        data : checkcoup,
+        message: 'Coupon Found'
+      })
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'An error occurred while Deleting Coupons',
+        error: error.message,
+      });
+    }
+}
+
+
+
+module.exports = {GetAllRemote , SingleProduct , GetLatestProductsByCategory , getSingleCategory , GetAllProducts , VerifyCoupon , }

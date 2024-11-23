@@ -1,11 +1,12 @@
 
 const { where } = require('sequelize');
+const crypto = require('crypto');
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const {Page , BusinessInfo , TopBar, Popup , User , HomeCat , MenuCat , About, Submenu , Location} = require('../db/models');
+const {Page , BusinessInfo , TopBar, Popup , User , HomeCat , MenuCat , About, Submenu , Location , Coupon , Order} = require('../db/models');
 const submenu = require('../db/models/submenu');
 const { count } = require('console');
-
 
 //View All the Sliders
 const getAllPage = async(req , res , next)=>{
@@ -81,7 +82,6 @@ const createPage = async(req, res, next)=>{
 //delete Page 
 const deletepage = async(req , res , next)=>{
     const { id } = req.params; 
-    console.log('fun called')
     try {
         const singlepage = await Page.findByPk(id);
     
@@ -746,30 +746,27 @@ const updateLocationProfile = async(req , res ,next)=>{
     PinCode : pinCode,
     Active : defaultVal,
     userId : customer.id,
-   
-
   }
-  // If defaultVal is true, make sure no other location is Active
+  console.log('newData = ', newData)
   if (defaultVal) {
-    // Find any existing location for the user that is set to Active
-    const existingActiveLocation = await Location.findOne({
-      where: {
-        userId: customer.id,
-        Active: true,
-      },
-    });
-
-    // If an active location exists, set its Active field to false
-    if (existingActiveLocation) {
-      await existingActiveLocation.update({ Active: false });
-    }
+    // Set all locations for the user to inactive first
+    await Location.update(
+      { Active: false },
+      {
+        where: {
+          userId: customer.id,
+        },
+      }
+    );
   }
   const newResult = await Location.create(newData)
+
+  const updatedResult = await Location.findAll({where : { userId: customer.id,}})
 
   if(!newResult) return res.status(401).json({status: 'fail', message: 'unable to create Location entry'})
   return res.status(200).json({
     status : 'success',
-    userinfo : newResult,
+    userinfo : updatedResult,
     message: 'Location has been updated'
   })
  } catch (error) {
@@ -782,4 +779,251 @@ const updateLocationProfile = async(req , res ,next)=>{
  }
 }
 
-module.exports = {getAllPage , createPage , deletepage , updateSocialLinks , updateTopHead , updateCompanyInfo, updatePopup , updateProfile , updateHomeCategories , getHomeCategories , updateHomeMenu, updateAboutPage, updateSubMenu, updateLocationProfile}
+// update location of the customer
+const deleteLocationProfile = async(req , res ,next)=>{
+ const {id} =  req.params; 
+//  console.log('res id - ', id)
+   try{
+    const customer = req.user;
+   const updatedResult = await Location.findByPk(id);
+    
+   if(!updatedResult) return res.status(400).json({status: 'fail', message: 'unable to create Location entry'})
+    await updatedResult.destroy();
+   const updatedlocations = await Location.findAll({where : { userId: customer.id}})
+   return res.status(200).json({
+     status : 'success',
+     userinfo : updatedlocations,
+     message: 'Location has been Deleted'
+   })
+  } catch (error) {
+   console.error('Error deleteing Location:', error);
+     return res.status(500).json({
+       status: 'error',
+       message: 'An error occurred while deleting Location',
+       error: error.message,
+     });
+  }
+ }
+// update Coupon 
+const UpdateCoupon = async(req ,res , next)=>{
+  const {name , type , value , expire} = req.body;
+  console.log('name - ', name)
+  console.log('type - ', type)
+  console.log('value - ', value)
+  console.log('expire - ', expire)
+  try {
+    const newData = {
+      name:name.toUpperCase(),
+      type:type , 
+      value: value , 
+      expireDate:expire ? expire : null
+    }
+    const createCoupon = await Coupon.create(newData);
+
+    if(!createCoupon) return res.status(401).json({status: 'fail', message: 'unable to Create coupons'})
+
+      return res.status(200).json({
+        status : 'success',
+        data : createCoupon,
+        message: 'Coupons has been Created'
+      })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while Creating Coupons',
+      error: error.message,
+    });
+  }
+  
+}
+
+// update Coupon 
+const GetAllCoupons = async(req ,res , next)=>{
+  try {
+    const couponsall = await Coupon.findAll();
+
+    if(!couponsall) return res.status(401).json({status: 'fail', message: 'unable to fetch coupons'})
+    
+      return res.status(200).json({
+        status : 'success',
+        data : couponsall,
+        message: 'Coupons has been updated'
+      })
+
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while gettting Coupons',
+      error: error.message,
+    });
+  }
+}
+
+// delete Coupon 
+const DeleteCoupon = async(req , res , next)=>{
+  const { id } = req.params; 
+  console.log('id value - ', id)
+  if(!id ) return res.status(401).join({status: 'fail' , message : 'ID Cannot be empy or null'})
+    try {
+      const getdataID = await Coupon.findByPk(id)
+      if(!getdataID) return res.status(401).json({status: 'fail' , message : 'Unable to find the Coupon'})
+
+        await getdataID.destroy();
+
+        return res.status(200).json({
+          status : 'success',
+          message: 'Data has been deleted'
+        })
+
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'An error occurred while Deleting Coupons',
+        error: error.message,
+      });
+    }
+}
+
+
+const checkCoupon = async(req , res , next)=>{
+  const {name} = req.body;
+  if(!name) return res.status(401).json({status: 'fail' , message: 'Value cant be empty'})
+    try {
+      const checkcoup  = await Coupon.findOne({where : {name}})
+      if(!checkcoup) return res.status(401).json({status : 'Fail' , message: 'Coupon Not Found'})
+      
+      return res.status(200).json({
+        status : "success",
+        data : checkcoup,
+        message: 'Coupon Found'
+      })
+    } catch (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'An error occurred while Deleting Coupons',
+        error: error.message,
+      });
+    }
+}
+
+// genarate value 
+const generateOrderNumber = () => {
+  // Generate a random number between 100000 and 999999 for a 6-digit order number
+  const orderNumber = Math.floor(100000 + Math.random() * 900000);
+  return orderNumber.toString(); // Convert it to a string if needed
+};
+
+// genarate order unique order no 
+const generateUniqueOrderNumber = async () => {
+  let isUnique = false;
+  let orderNumber;
+
+  while (!isUnique) {
+    orderNumber = generateOrderNumber();
+    const existingOrder = await Order.findOne({ where: { orderID: orderNumber } });
+
+    if (!existingOrder) {
+      isUnique = true; // The order number is unique
+    }
+  } 
+
+  return orderNumber;
+};
+
+// Function to generate hash
+const generateHash = ({ key, txnid, amount, productinfo, firstname, email, salt, udf1 = '', udf2 = '', udf3 = '', udf4 = '', udf5 = '' }) => {
+  // Concatenate the fields in the required order with a pipe '|' delimiter
+  const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
+
+  // Generate SHA-512 hash of the concatenated string
+  const hash = crypto.createHash('sha512').update(hashString).digest('hex');
+
+  return hash;
+};
+
+// creating order
+const paymentInitials = async(req ,res , next)=>{
+  const {payload , selectedLocation} = req.body;
+  console.log('payload - ', payload);
+  console.log('selectedLocation - ', selectedLocation);
+
+  let key = process.env.MerchantKey ;
+  let salt = process.env.MerchantSaltV1;
+  let orderID = await generateUniqueOrderNumber();
+  const customer = req.user;
+  
+  try {
+
+    // Check and update email if different
+    if (customer.email !== payload.email) {
+      await customer.update({ email: payload.email });
+    }
+
+    // Check and update first name if different
+    if (customer.firstName !== payload.firstName) {
+      await customer.update({ firstName: payload.firstName });
+    }
+
+    // Check and update last name if different
+    if (customer.lastName !== payload.lastName) {
+      await customer.update({ lastName: payload.lastName });
+    }
+
+    const cusinfo = {
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phone : customer.phone,
+    }
+    const orderdata = {
+      orderID: orderID,
+      couponInfo : payload.coupon,
+      proValue : payload.proValue,
+      subTotal : payload.subTotal,
+      tax : payload.tax,
+      productInfo : payload.cartItems,
+      customerInfo: cusinfo,
+      customerAddress:selectedLocation,
+      status:'Proccessing',
+      userId: customer.id
+    }
+    // create order 
+    const createorder = await Order.create(orderdata)
+    if(!createorder) return res.status(400).json({status : 'Fail' , data: orderdata, message: 'Unable to create New Order'})
+    const hashval = generateHash({
+      key,
+      txnid:orderID,
+      amount : payload.subTotal, 
+      productinfo: 'ArdasInterior Product', 
+      firstname : customer.firstName, 
+      email: customer.email, 
+      salt,
+    })
+    const newData = {
+      key , 
+      txnid:orderID,
+      amount:payload.subTotal,
+      productinfo : 'ArdasInterior Product',
+      firstname: customer.firstName,
+      email: customer.email,
+      phone : customer.phone,
+      hash: hashval,
+      surl: process.env.SURL,
+      furl: process.env.FURL
+    }
+
+    return res.status(200).json({
+      status : "success",
+      data : newData,
+      message: 'Hash Created'
+    })
+  } catch (error) {
+    console.error('Error while creating order:', error); // Added console log for error debugging
+    return res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while creating Order',
+      error: error.message,
+    });
+  }
+}
+module.exports = {getAllPage , createPage , deletepage , updateSocialLinks , updateTopHead , updateCompanyInfo, updatePopup , updateProfile , updateHomeCategories , getHomeCategories , updateHomeMenu, updateAboutPage, updateSubMenu, updateLocationProfile , UpdateCoupon, GetAllCoupons , DeleteCoupon , checkCoupon , paymentInitials , deleteLocationProfile}
